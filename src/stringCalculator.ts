@@ -6,11 +6,9 @@ export class NegativeNumberError extends Error {
     this.negatives = negatives;
   }
 }
-
 function escapeForRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
-
 export function add(input?: string | null): number {
   if (input === undefined || input === null) return 0;
 
@@ -19,14 +17,10 @@ export function add(input?: string | null): number {
 
   let numbersPart = trimmed;
   const delimiters: string[] = [',', '\n'];
-
-  // Custom delimiter(s) syntax: //DELIM\n or //[D1][D2]\n
   if (numbersPart.startsWith('//')) {
     const newlineIndex = numbersPart.indexOf('\n');
     const header = numbersPart.slice(2, newlineIndex === -1 ? undefined : newlineIndex);
     numbersPart = newlineIndex === -1 ? '' : numbersPart.slice(newlineIndex + 1);
-
-    // multiple delimiters in [delim] form
     const multiMatch = header.match(/\[(.+?)\]/g);
     if (multiMatch) {
       multiMatch.forEach((m) => {
@@ -34,19 +28,14 @@ export function add(input?: string | null): number {
         delimiters.push(delim);
       });
     } else if (header.length > 0) {
-      // single delimiter like ;
       delimiters.push(header);
     }
   }
-
-  // Build splitting regex
   const delimRegex = new RegExp(delimiters.map(escapeForRegex).join('|'), 'g');
-
   const tokens = numbersPart
     .split(delimRegex)
     .map((t) => t.trim())
     .filter((t) => t.length > 0);
-
   const nums: number[] = tokens.map((t) => {
     const n = Number(t);
     if (Number.isNaN(n)) {
@@ -54,12 +43,9 @@ export function add(input?: string | null): number {
     }
     return n;
   });
-
   const negatives = nums.filter((n) => n < 0);
   if (negatives.length) throw new NegativeNumberError(negatives);
-
   const filtered = nums.filter((n) => n <= 1000);
-
   const sum = filtered.reduce((a, b) => a + b, 0);
   return sum;
 }
