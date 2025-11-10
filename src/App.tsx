@@ -6,17 +6,13 @@ const App: React.FC = () => {
   const [input, setInput] = useState('');
   const [result, setResult] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // refs for DOM nodes and to prevent overlapping timers
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const clearAnnounceTimer = useRef<number | null>(null);
 
-  // helper to force re-announcement for the same text by clearing then re-setting quickly
   const announceResult = (value: number) => {
-    // if the same value is already shown, clear then re-set so SR announces again
+
     if (result === value) {
       setResult(null);
-      // clear any pending timer first
       if (clearAnnounceTimer.current) {
         window.clearTimeout(clearAnnounceTimer.current);
         clearAnnounceTimer.current = null;
@@ -31,7 +27,6 @@ const App: React.FC = () => {
   };
 
   const announceError = (msg: string) => {
-    // same approach for errors so repeated identical errors are still announced
     if (error === msg) {
       setError(null);
       if (clearAnnounceTimer.current) {
@@ -49,22 +44,16 @@ const App: React.FC = () => {
 
   const handleCalculate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Trim and check empty input — if empty, announce and focus textarea
     if (input.trim() === '') {
       setResult(null);
-      // set error via announceError so it will re-announce if identical
       announceError('No numbers input. Please enter at least one number.');
-      // shift focus to textarea so keyboard and screen-reader users can immediately type
       textareaRef.current?.focus();
       return;
     }
 
     try {
       const sum = add(input);
-      // clear any previous error
       if (error) setError(null);
-      // announce result (with forced re-announce if same value)
       announceResult(sum);
     } catch (err: any) {
       setResult(null);
@@ -75,7 +64,6 @@ const App: React.FC = () => {
       } else {
         announceError('An unexpected error occurred');
       }
-      // when error occurs, move focus to textarea to allow correction (optional but helpful)
       textareaRef.current?.focus();
     }
   };
@@ -164,9 +152,6 @@ const App: React.FC = () => {
                   </button>
                 </div>
               </form>
-
-              {/* Persistent live region for results — updates cause SR announcement.
-                  We intentionally clear+re-set result when it's identical to force re-announcement. */}
               <div
                 id="calc-result"
                 role="status"
@@ -176,8 +161,6 @@ const App: React.FC = () => {
               >
                 {result !== null ? `Result: ${result}` : ''}
               </div>
-
-              {/* Errors and empty-input messages use role="alert" so they're spoken immediately */}
               {error && (
                 <div role="alert" className="error" style={{ marginTop: 12 }}>
                   <p style={{ margin: 0 }}>{error}</p>
