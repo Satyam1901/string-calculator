@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useRef, useState } from 'react';
 import { add, NegativeNumberError } from './stringCalculator';
 
@@ -6,16 +5,14 @@ const App: React.FC = () => {
   const [input, setInput] = useState('');
   const [result, setResult] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const clearAnnounceTimer = useRef<number | null>(null);
-
   const announceResult = (value: number) => {
-
     if (result === value) {
       setResult(null);
       if (clearAnnounceTimer.current) {
         window.clearTimeout(clearAnnounceTimer.current);
-        clearAnnounceTimer.current = null;
       }
       clearAnnounceTimer.current = window.setTimeout(() => {
         setResult(value);
@@ -31,7 +28,6 @@ const App: React.FC = () => {
       setError(null);
       if (clearAnnounceTimer.current) {
         window.clearTimeout(clearAnnounceTimer.current);
-        clearAnnounceTimer.current = null;
       }
       clearAnnounceTimer.current = window.setTimeout(() => {
         setError(msg);
@@ -44,6 +40,7 @@ const App: React.FC = () => {
 
   const handleCalculate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (input.trim() === '') {
       setResult(null);
       announceError('No numbers input. Please enter at least one number.');
@@ -94,7 +91,7 @@ const App: React.FC = () => {
       <div className="page-root">
         <h1 className="semantic-h1">String Calculator</h1>
 
-        <div className="visual-stack" aria-hidden={false}>
+        <div className="visual-stack">
           <figure className="visual-image" aria-hidden="true" style={{ margin: 0 }}>
             <img
               src="https://images.unsplash.com/photo-1594352161389-11756265d1b5?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -144,9 +141,6 @@ const App: React.FC = () => {
                   <button
                     type="submit"
                     className="btn"
-                    aria-label="Calculate"
-                    onFocus={(e) => e.currentTarget.classList.add('focus-visible')}
-                    onBlur={(e) => e.currentTarget.classList.remove('focus-visible')}
                   >
                     Calculate
                   </button>
@@ -155,12 +149,11 @@ const App: React.FC = () => {
               <div
                 id="calc-result"
                 role="status"
-                aria-live="polite"
-                aria-atomic="true"
                 style={{ minHeight: 24, marginTop: 8 }}
               >
                 {result !== null ? `Result: ${result}` : ''}
               </div>
+
               {error && (
                 <div role="alert" className="error" style={{ marginTop: 12 }}>
                   <p style={{ margin: 0 }}>{error}</p>
